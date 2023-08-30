@@ -45,7 +45,7 @@ const handleLoadNews = async (id) =>{
          </div>
          
        </div>
-       <button class="btn text-white  bg-pink-700">Details</button>
+       <button  onclick="handleModal('${news?._id}')"  class="btn text-white  bg-pink-700">Details</button>
      </div>
    </div>
  </div>
@@ -54,5 +54,33 @@ const handleLoadNews = async (id) =>{
    cardContainer.appendChild(div);
   })
 }
+
+const handleModal = async (newsId) =>{
+   const response = await fetch(`https://openapi.programming-hero.com/api/news/${newsId}`);
+   const datas = await response.json();
+  const data = datas.data ;
+  console.log(data)
+   const modalContainer = document.getElementById('modal-container');
+   modalContainer.innerHTML = ""
+   const div = document.createElement('div');
+   div.innerHTML = `
+   <dialog id="my_modal_1" class="modal">
+     <form method="dialog" class="modal-box">
+       <h3 class="font-bold text-lg">${data[0].title}</h3>
+       <p class="py-4">${data[0].details}</p>
+       <div class="modal-action">
+         <!-- if there is a button in form, it will close the modal -->
+         <button class="btn">Close</button>
+       </div>
+     </form>
+   </dialog>   
+   
+   `;
+ 
+   modalContainer.appendChild(div)
+   const modal = document.getElementById('my_modal_1');
+   modal.showModal();
+}
+
 handleClick();
 handleLoadNews("01");
