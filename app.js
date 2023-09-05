@@ -1,3 +1,4 @@
+let sorted = [] ;
 const handleClick = async() =>{
    const tabContainer = document.getElementById('tab-container');
    const response =await fetch('https://openapi.programming-hero.com/api/news/categories')
@@ -18,42 +19,88 @@ const handleLoadNews = async (id) =>{
   const response = await fetch
   (`https://openapi.programming-hero.com/api/news/category/${id}`);
   const data = await response.json() ;
-  console.log(data.data)
+  sorted = data.data ;
+ displayCards(sorted)
+ 
+}
+// 
+const displayCards = (sorted)=>{
   const cardContainer = document.getElementById('card-container');
   cardContainer.innerHTML = " "
-  data.data?.forEach((news)=>{
-   const div = document.createElement('div');
-   div.innerHTML =`
-   <div class="card card-compact w-96 mx-auto bg-base-100 shadow-xl">
-   <figure><img src="${news?.image_url}" alt="Shoes" /></figure>
-   <div class="card-body">
-    <div class="flex items-center">
-       <h2 class="text-[16px] font-bold">${news.title.slice(0,40)
-       }</h2>
-       <button class=" text-[10px] bg-pink-700 px-3 py-[1px] rounded text-white">${news?.rating?.badge}</button>
-    </div>
-     <p>${news.details.slice(0,100)}</p>
-     <p>Total Views : ${news.total_view? news.total_view : "No Views"}</p>
-     <div class="card-actions items-center">
-       <div >
-           <div class = "flex items-center gap-x-2">
-           <img src="${news?.author?.img}" alt="" class="w-[70px] h-[70px] rounded-full">
-         <div>
-         <h4 class="font-bold">${news?.author?.name}</h4>
-         <p>${news?.author?.published_date?news?.author?.published_date:"Today Date"}</p>
-           </div>
-         </div>
-         
-       </div>
-       <button  onclick="handleModal('${news?._id}')"  class="btn text-white  bg-pink-700">Details</button>
+  sorted?.forEach((news)=>{
+    const div = document.createElement('div');
+    div.innerHTML =`
+    <div class="card card-compact w-96 mx-auto bg-base-100 shadow-xl">
+    <figure><img src="${news?.image_url}" alt="Shoes" /></figure>
+    <div class="card-body">
+     <div class="flex items-center">
+        <h2 class="text-[16px] font-bold">${news.title.slice(0,40)
+        }</h2>
+        <button class=" text-[10px] bg-pink-700 px-3 py-[1px] rounded text-white">${news?.rating?.badge}</button>
      </div>
-   </div>
- </div>
-   
-   `
-   cardContainer.appendChild(div);
-  })
+      <p>${news.details.slice(0,100)}</p>
+      <p>Total Views : ${news.total_view? news.total_view : "No Views"}</p>
+      <p>Total Views : ${news?.rating?.number? news.rating?.number: "No rating"}</p>
+      <div class="card-actions items-center">
+        <div >
+            <div class = "flex items-center gap-x-2">
+            <img src="${news?.author?.img}" alt="" class="w-[70px] h-[70px] rounded-full">
+          <div>
+          <h4 class="font-bold">${news?.author?.name}</h4>
+          <p>${news?.author?.published_date?news?.author?.published_date:"Today Date"}</p>
+            </div>
+          </div>
+          
+        </div>
+        <button  onclick="handleModal('${news?._id}')"  class="btn text-white  bg-pink-700">Details</button>
+      </div>
+    </div>
+  </div>
+    
+    `
+    cardContainer.appendChild(div);
+   })
 }
+// 
+const handleSortByViews = () => {
+  console.log(sorted)
+   sorted.sort((a,b)=>{
+
+    return b.total_view - a.total_view
+
+   })
+  displayCards(sorted)
+}
+// 
+
+const handleSortByRating = () => {
+  sorted.sort((a,b)=>{
+    return b.rating.number - a.rating.number
+
+   })
+  displayCards(sorted)
+}
+// 
+const likeIcon = document.getElementById('icon-like');
+let isRed = false; // Flag to track the color state
+
+likeIcon.addEventListener('click', function () {
+  if (isRed === false) {
+    likeIcon.style.color = 'red';
+    isRed = true;
+  } else {
+    likeIcon.style.color = 'white';
+    isRed = false;
+  }
+});
+
+// Add a dblclick event listener to reset the color to white
+likeIcon.addEventListener('dblclick', function () {
+  likeIcon.style.color = 'white';
+  isRed = false;
+});
+
+
 
 const handleModal = async (newsId) =>{
    const response = await fetch(`https://openapi.programming-hero.com/api/news/${newsId}`);
